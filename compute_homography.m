@@ -30,9 +30,9 @@ for i = 1 : size(Q,1) / 2
 end
 for i = (size(Q,1) / 2) + 1 : size(Q,1)
     % beta
-    i = i - size(p1,2);
-    Q(i,:) = [0, 0, 0, p2(1,i), p2(2,i), 1, ...
-        -p1(2,i)*p2(1,i), -p1(2,i)*p2(2,i), -p1(2,i)];
+    j = i - size(p1,2);
+    Q(i,:) = [0, 0, 0, p2(1,j), p2(2,j), 1, ...
+        -p1(2,j)*p2(1,j), -p1(2,j)*p2(2,j), -p1(2,j)];
 end
 % decompose Q
 [U, S, V] = svd(Q);
