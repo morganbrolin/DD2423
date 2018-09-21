@@ -29,7 +29,7 @@ for  C = 1:size(points2d,3)
 end
 
 % computing variance ignoring NaN vectors
-dc = zeros(size(points2d,3));
+dc = zeros(size(points2d,3),1);
 for  C = 1:size(points2d,3)
     points1 = points2d(:,:,C);
     p = pc(:,C);
@@ -38,7 +38,7 @@ for  C = 1:size(points2d,3)
     for i = 1 : size(points1,2)
         if sum(isnan(points1(:,i))) == 0
             N = N + 1;
-            d = norm(points1(:,i) - p, 2);
+            d = d + norm(points1(:,i) - p, 2);
         end
     end
     d = d / N;
@@ -48,7 +48,7 @@ end
 % form normalization matrices from pc and dc
 Nc = zeros(3,3,size(points2d,3));
 for  C = 1:size(points2d,3)
-    Nc(:,:,C) = (sqrt(2)/dc(C))*[1,0,-pc(1,C); 0,1,-pc(2,C); 0,0,dc(C)/sqrt(2)];
+    Nc(:,:,C) = sqrt(2)/dc(C) * [1,0,-pc(1,C); 0,1,-pc(2,C); 0,0,dc(C)/sqrt(2)];
 end
 
 norm_mat = Nc;

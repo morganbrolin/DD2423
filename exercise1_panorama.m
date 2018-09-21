@@ -31,27 +31,37 @@ end
 % Determine all homographies to a reference view. We have:
 % point in REFERENCE_VIEW = homographies(:,:,c) * point in image c.
 % Remember, you have to set homographies{REFERENCE_VIEW} as well.
-homographies = zeros(3,3,CAMERAS); 
+homographies = zeros(3,3,CAMERAS);
+norm_homographies = zeros(3,3,CAMERAS);
+norm_points2d = zeros(size(points2d,1),size(points2d,2),size(points2d,3));
+
+% normalize points
+norm_mat = compute_normalization_matrices( points2d );
+for c = 1:CAMERAS
+    norm_points2d(:,:,c) = norm_mat(:,:,c) * points2d(:,:,c);
+end
 
 for c = 1:CAMERAS
+    points_ref = points2d(:,:,REFERENCE_VIEW);
+    points_c   = points2d(:,:,c);
     
-%     if c == REFERENCE_VIEW
-%         homographies(:,:,c) = eye(3);
-%     else
-        points_ref = points2d(:,:,REFERENCE_VIEW);
-        points_c   = points2d(:,:,c);
+    norm_points_ref = norm_points2d(:,:,REFERENCE_VIEW);
+    norm_points_c   = norm_points2d(:,:,c);
 
-        homographies(:,:,c) = compute_homography( points_ref, points_c );
-%     end
+    norm_homographies(:,:,c) = compute_homography( norm_points_ref, norm_points_c );
     
     [error_mean error_max] = check_error_homographies( ...
-      homographies(:,:,c), points2d(:,:,c), points2d(:,:,REFERENCE_VIEW) );
+      norm_homographies(:,:,c), points2d(:,:,c), points2d(:,:,REFERENCE_VIEW) );
+  
+    % computer real H
+    homographies(:,:,c) = inv(norm_mat(:,:,REFERENCE_VIEW)) * norm_homographies(:,:,c) * norm_mat(:,:,c);
  
+    [error_mean error_max] = check_error_homographies( ...
+      norm_homographies(:,:,c), points2d(:,:,c), points2d(:,:,REFERENCE_VIEW) );
+    
     fprintf( 'Between view %d and ref. view; ', c );
     fprintf( 'average error: %5.2f; maximum error: %5.2f \n', error_mean, error_max );
 end
-
-
 %% Generate, draw and save panorama
 
 panorama_image = generate_panorama_alt( images, homographies );
