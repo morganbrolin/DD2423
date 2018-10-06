@@ -30,10 +30,7 @@ p1 = homogeneous_to_cartesian(points2d(:,:,1));
 p2 = homogeneous_to_cartesian(points2d(:,:,2));
 pa = homogeneous_to_cartesian(pa);
 pb = homogeneous_to_cartesian(pb);
-% calculate difference between points
-% p_diff1 = p1 - pa;
-% p_diff2 = p2 - pb;
-% compute distance of difference vectors
+% compute distance of vector pairs
 d1 = diag(pdist2(p1',pa'));
 d2 = diag(pdist2(p2',pb'));
 % extract maximum error
