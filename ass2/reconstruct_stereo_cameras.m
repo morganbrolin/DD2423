@@ -37,10 +37,11 @@ W = [
 R1 = U*W*V';
 R2 = U*W'*V';
 % determine if R1 & R2 also mirrors the camera and scale with -1 if they do
-if det(R1) < 0
+%fipped to make it right
+if det(R1) > 0
     R1 = R1 * -1;
 end
-if det(R2) < 0
+if det(R2) > 0
     R2 = R2 * -1;
 end
 % compute Mbn and try to reconstruct 3d point for each
@@ -65,13 +66,14 @@ for i = 1 : 4
     pb = R(:,:,i)*[eye(3) T(:,i)]*p(:,i);
 %     c1 = p(3,i) > 0
 %     c2 = pb(3) > 0
-    if p(3,i) > 0 && pb(3) > 0
+    %flipped > to < to make it right
+    if p(3,i) < 0 && pb(3) > 0
 %     if i == 3 % test, remove later. 3 seems 2 be correct 4 test case
 %         fprintf('motherclucker\n')
         cams(:,:,2) = Mb(:,:,i);
         % Verify the rotation and translation
         Etest = R(:,:,i) * [0 -t(3) t(2); t(3) 0 -t(1); -t(2) t(1) 0];
-        E - Etest
+        E - Etest;
         break;
     end
 end
@@ -79,6 +81,6 @@ end
 cams(:,:,1) = Ma;
 % set camera centers
 cam_centers(:,1) = [0;0;0;1];
-cam_centers(:,2) = [-t(1);-t(2);-t(3);1];
+% fliped -t to t to get it right
+cam_centers(:,2) = [t(1);t(2);t(3);1];
 end
-
