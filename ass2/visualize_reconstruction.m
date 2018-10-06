@@ -43,8 +43,13 @@ axis vis3d
 grid on
 
 % reconstruct surface
-tri = delaunay(X,Y,Z);
+tri = delaunay(points2d_cartesian(1,:), points2d_cartesian(2,:));
 trisurf(tri,X,Y,Z);
 
+% create textured surface
+if isempty(texture) == 0
+    draw_textured_triangles(tri, X, Y, Z, ...
+        points2d_cartesian(2,:), points2d_cartesian(1,:), texture, 64);
+end
 end
 

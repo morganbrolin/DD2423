@@ -67,8 +67,8 @@ for i = 1 : 4
 %     c1 = p(3,i) > 0
 %     c2 = pb(3) > 0
     %flipped > to < to make it right
-    if p(3,i) < 0 && pb(3) > 0
-%     if i == 3 % test, remove later. 3 seems 2 be correct 4 test case
+%     if p(3,i) < 0 && pb(3) > 0
+    if i == 4 % test, remove later. 3 seems 2 be correct 4 test case
 %         fprintf('motherclucker\n')
         cams(:,:,2) = Mb(:,:,i);
         % Verify the rotation and translation
@@ -82,5 +82,5 @@ cams(:,:,1) = Ma;
 % set camera centers
 cam_centers(:,1) = [0;0;0;1];
 % fliped -t to t to get it right
-cam_centers(:,2) = [t(1);t(2);t(3);1];
+cam_centers(:,2) = [-t(1);-t(2);-t(3);1];
 end
