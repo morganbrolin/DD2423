@@ -38,10 +38,10 @@ R1 = U*W*V';
 R2 = U*W'*V';
 % determine if R1 & R2 also mirrors the camera and scale with -1 if they do
 %fipped to make it right
-if det(R1) > 0
+if det(R1) < 0
     R1 = R1 * -1;
 end
-if det(R2) > 0
+if det(R2) < 0
     R2 = R2 * -1;
 end
 % compute Mbn and try to reconstruct 3d point for each
@@ -52,9 +52,13 @@ Mb4 = K(:,:,2)*R2*[eye(3) -t];
 Ma = K(:,:,1) * [eye(3) [0;0;0]];
 
 p1 = reconstruct_point_cloud(cat(3,Mb1,Ma),points2d);
+p1 = p1*(1/p1(4));
 p2 = reconstruct_point_cloud(cat(3,Mb2,Ma),points2d);
+p2 = p2*(1/p2(4));
 p3 = reconstruct_point_cloud(cat(3,Mb3,Ma),points2d);
+p3 = p3*(1/p3(4));
 p4 = reconstruct_point_cloud(cat(3,Mb4,Ma),points2d);
+p4 = p4*(1/p4(4));
 % loop over the 4 possibilities untill a case where the point is in front
 % of both cameras
 Mb = cat(3,Mb1,Mb2,Mb3,Mb4);
@@ -62,14 +66,13 @@ p = [p1 p2 p3 p4];
 R = cat(3,R1,R1,R2,R2);
 T = [t -t t -t];
 cams = zeros(3,4,2);
+
+
 for i = 1 : 4
     pb = R(:,:,i)*[eye(3) T(:,i)]*p(:,i);
-%     c1 = p(3,i) > 0
-%     c2 = pb(3) > 0
     %flipped > to < to make it right
-%     if p(3,i) < 0 && pb(3) > 0
-    if i == 4 % test, remove later. 3 seems 2 be correct 4 test case
-%         fprintf('motherclucker\n')
+    if p(3,i) > 0 && pb(3) > 0
+%     if i == 3 % test, remove later. 3 seems 2 be correct 4 test case
         cams(:,:,2) = Mb(:,:,i);
         % Verify the rotation and translation
         Etest = R(:,:,i) * [0 -t(3) t(2); t(3) 0 -t(1); -t(2) t(1) 0];
