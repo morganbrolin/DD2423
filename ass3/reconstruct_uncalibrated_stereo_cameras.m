@@ -18,6 +18,9 @@ S = [0 -1 1
     -1 1 0];
 %h = F'*zeros(3,1);
 h = null(F');
+if isempty(h)
+    h = [0,0,0]';
+end
 cams(:,:,2) = [S*F, h];
 [U1, S1, V1] = svd(cams(:,:,1));
 [U2, S2, V2] = svd(cams(:,:,2));
